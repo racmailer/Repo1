@@ -1,0 +1,1 @@
+Get-ADOrganizationalUnit -filter * -server globomantics.net
