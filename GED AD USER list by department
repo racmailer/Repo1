@@ -1,0 +1,1 @@
+Get-Aduser -Filter {city -eq "Chicago"} -Properties city, department | format-table -Property name, city, department
