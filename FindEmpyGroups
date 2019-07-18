@@ -1,0 +1,3 @@
+get-adgroup -filter * | where {-Not ($_ | get-adgroupmember)} | Select Name
+
+get-adgroup -filter "members -notlike '*' -AND GroupScope -eq 'Universal'" -SearchBase "OU=Groups,OU=Employees,DC=Globomantics, DC=local" | Select Name,Group*
