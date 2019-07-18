@@ -1,0 +1,30 @@
+################################################################################################################
+# Script will find expired computers in the domain they did not log on for 14 days and 1 month
+# RC 3/14/2017
+#############################################################################################################
+
+$RKReport = ''
+$RKReport += "***  Domain.org AD Unused
+               + "Computer Report' n"
+$RKReport += "*** Generated [$(Get-date)]' n"
+$RKReport += "**********************************************************************'n'n"
+
+# Report on computer accounts not logged on the past 14 days
+$RKReport += "*** Machines not logged on in past 14 days'n"
+$TwoWeeksAgo = (Get-Date) .AddDays (-14)
+$RKReport += Get-ADComputer
+  -Properties lastLogonDate
+  -Filter 'lastLogonDate' -It $TwoWeeksAgo' | Sort-Object -Property lastLogonDate | Format-Table -PropertyName, lastLogonDate 
+ 
+ # Report on Computer Accounts not logged in the last month
+ $RKReport += "*** Machines not logged on in past month'n"
+$MonthAgo = (Get-Date) .AddMonths (-1)
+$RKReport += Get-ADComputer
+  -Properties lastLogonDate
+  -Filter 'lastLogonDate' -It $MonthAgo' | 
+    Sort-Object -Property lastLogonDate | 
+      Format-Table -PropertyName, lastLogonDate |
+        OutString
+ $RKReport
+ 
+ 
