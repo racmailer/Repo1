@@ -1,0 +1,29 @@
+add-adgroupmember "chicago IT" -Members SKluger
+
+# enumerate members of a group
+
+Get-ADGroupMember "Domain Admins"
+
+Get-ADGroupMember "Chicago All Users" -Recursive | Select DistinguishedName 
+
+# Find a users group Membership
+
+get-aduser SKluger -property Memberof | Select -ExpandProperty memberOf
+
+# Results
+
+CN=NewTest,OU=Groups,OU=Employees,
+
+DC=GLOBOMANTICS,DC=local
+
+CN=Chicago Test,OU=Groups,OU=Employees,
+
+DC=GLOBOMANTICS,DC=local
+
+CN=Chicago IT,OU=Groups,OU=Employees,
+
+DC=GLOBOMANTICS,DC=local
+
+CN=Chicago Sales Users,OU=Groups,OU=Employees,
+
+DC=GLOBOMANTICS,DC=local 
