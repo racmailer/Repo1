@@ -1,5 +1,5 @@
 ######################################################################################################################
-# Script will check network connectivity for the server including the following items:
+# Script will check network connectivity for the server including the following items to the DC:
 # Ping, SMB, HTTP, LDAP, SSH, FTP, DHCP,RPC,NetBios,DNS
 # Computer is Computer1 Substitute the computer name with valid computer name into the variable.
 ######################################################################################################################
