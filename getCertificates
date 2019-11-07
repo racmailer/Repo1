@@ -1,0 +1,30 @@
+###################################################################
+#Script will get installed certificates on remote computers
+#Computer names streamed from Machines.csv file
+#Results saved to desktop cert_results.csv file
+####################################################################
+
+$Servers = import-csv \\folderpath\Machines.csv
+ 
+  $Results = @()
+  $Results = Invoke-Command -cn $Servers {
+          $Certs = @{} | Select Certificate,FriendlyName,Issuer
+          $Cert = Get-ChildItem Cert:\LocalMachine\My | Where-Object {$_.subject -match [Environment]::GetEnvironmentVariable("computername")}
+          If($Cert){
+              $Certs.Certificate = $Cert.subject
+              $Certs.FriendlyName = $Cert.FriendlyName
+              $Certs.Issuer = $Cert.Issuer
+          }
+          Else{
+              $Certs.Certificate = " - "
+              $Certs.FriendlyName = " - "
+              $Certs.Issuer = " - "
+          }
+          $Certs
+  } | Select-Object @{n='ServerName';e={$_.pscomputername}},Certificate,FriemdlyName,Issuer
+ 
+  #Display results in console
+  $Results | Sort-Object FriendlyName -Descending
+ 
+  #Save results to CSV file
+  $Results | Sort-Object FriendlyName -Descending | Export-Csv -Path C:\users\$env:username\desktop\cert_results.csv -NoTypeInformation -Force
