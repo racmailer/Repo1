@@ -1,0 +1,222 @@
+# This script is meant to run daily
+#
+# It will fetch the members of Share and do the following:
+# - Find out who was added in the last 24hs
+# - Find out who has been a member for over 90 days
+# - Remove users who have been members for over 90 days
+# - Send an email with the findings
+
+#Schema:
+# CREATE TABLE [dbo].[b2bMember](
+# 	[userName] [varchar](25) NOT NULL,
+#	[dateAdded] [date] NOT NULL,
+# CONSTRAINT [PK_b2bMember] PRIMARY KEY CLUSTERED 
+#(
+#	[userName] ASC,
+#	[dateAdded] ASC
+#)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+#) ON [PRIMARY]
+
+
+
+$today     = (get-date).toString('yyyy-MM-dd') 
+#When to expire membership
+$deadline  = (get-date).AddDays(-90)
+$groupName = "cis-b2b-share" #use "testgroup" for testing
+
+$dbServer  = "NYPRDMGMNT01"
+$dbname    = "b2bMembership"
+$tableName = "b2bMember"
+$fileName  = "D:\Scripts\Reports\b2b.html" 
+
+$newUsers     = @()
+$removedUsers = @()
+$expiredUsers = @()
+
+$exceptions = get-content D:\Scripts\B2Bexceptions.txt
+
+New-Item -ItemType file $fileName -Force 
+import-module sqlps -WarningAction SilentlyContinue
+
+Function writeHtmlHeader { 
+    param($fileName) 
+
+    Add-Content $fileName "<html>" 
+    Add-Content $fileName "<head>" 
+    Add-Content $fileName "<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>" 
+    add-content $fileName '<STYLE TYPE="text/css">' 
+    add-content $fileName  "<!--" 
+    add-content $fileName  "td {" 
+    add-content $fileName  "font-family: Tahoma;" 
+    add-content $fileName  "font-size: 11px;" 
+    add-content $fileName  "border-top: 1px solid #999999;" 
+    add-content $fileName  "border-right: 1px solid #999999;" 
+    add-content $fileName  "border-bottom: 1px solid #999999;" 
+    add-content $fileName  "border-left: 1px solid #999999;" 
+    add-content $fileName  "padding-top: 0px;" 
+    add-content $fileName  "padding-right: 0px;" 
+    add-content $fileName  "padding-bottom: 0px;" 
+    add-content $fileName  "padding-left: 0px;" 
+    add-content $fileName  "}" 
+    add-content $fileName  "body {" 
+    add-content $fileName  "margin-left: 5px;" 
+    add-content $fileName  "margin-top: 5px;" 
+    add-content $fileName  "margin-right: 0px;" 
+    add-content $fileName  "margin-bottom: 10px;" 
+    add-content $fileName  "" 
+    add-content $fileName  "table {" 
+    add-content $fileName  "border: thin solid #000000;" 
+    add-content $fileName  "}" 
+    add-content $fileName  "-->" 
+    add-content $fileName  "</style>" 
+    Add-Content $fileName "</head>" 
+    Add-Content $fileName "<body>"  
+} 
+ 
+Function writeTableHeader { 
+    param($fileName) 
+
+    Add-Content $fileName "<table width='100%'>" 
+    Add-Content $fileName "<tr bgcolor=#CCCCCC>" 
+    Add-Content $fileName "<td width='40%' align='left'>Username</td>" 
+    Add-Content $fileName "<td width='50%' align='left'>Date Added</td>" 
+    Add-Content $fileName "<td width='10%' align='left'>Days Left</td>" 
+    Add-Content $fileName "</tr>" 
+} 
+
+Function writeTableFooter { 
+    param($fileName) 
+
+    Add-Content $fileName "</table>" 
+} 
+
+Function writeTitle {
+    param($fileName,$title)
+    
+    Add-Content $fileName "<table width='100%'>" 
+    Add-Content $fileName "<tr bgcolor='#CCCCCC'>" 
+    Add-Content $fileName "<td width='100%' align='left' colSpan=3><font face='tahoma' color='#003399' size='2'><strong> $title </strong></font></td>" 
+    Add-Content $fileName "</tr>" 
+    Add-Content $fileName "</table>" 
+}
+
+Function writeHtmlFooter { 
+    param($fileName) 
+
+    #Add-Content $fileName "</table>" 
+    Add-Content $fileName "</body>" 
+    Add-Content $fileName "</html>" 
+} 
+
+function writeTableData  {
+    param($filename,$data)
+
+    Add-Content $fileName "<font face='tahoma' size='2'>$data</font><br>"
+}
+
+Function writeDbInfo { #need to overwrite if found. I don't need every instance
+    param($userName,$dateAdded) 
+    
+    #$userName
+    #$dateAdded
+
+    $query = "INSERT INTO $tableName values ('$userName','$dateAdded')"
+    invoke-sqlcmd -HostName $dbServer -Database $dbName -query $query -WarningAction SilentlyContinue
+} 
+
+Function deleteDbInfo { 
+    param($userName) 
+    
+    #$query = "UPDATE $tableName set dateRemoved='$dateRemoved' WHERE userName='$userName'"
+    $query = "DELETE FROM $tableName WHERE userName='$userName'"
+    invoke-sqlcmd -HostName $dbServer -Database $dbName -query $query -WarningAction SilentlyContinue
+} 
+
+Function sendEmail { 
+    param($from,$to,$subject,$smtphost,$htmlFileName) 
+
+    $body = Get-Content $htmlFileName 
+    $smtp = New-Object System.Net.Mail.SmtpClient $smtphost 
+    $msg  = New-Object System.Net.Mail.MailMessage $from, $to, $subject, $body 
+    $msg.isBodyhtml = $true 
+    $smtp.send($msg) 
+} 
+
+#Fetch actual users (from AD)
+$AdMembers  = (Get-ADGroup $groupName | Get-ADGroupMember).SamAccountName | sort
+#$AdMembers
+
+#Fetch known users (from DB)
+$query     = "select * from $tableName"
+$DbMembers = invoke-sqlcmd -HostName $dbServer -Database $dbName -query $query  | sort -Property userName
+#$DbMembers
+
+#Get changes in membership
+$diffUsers = Compare-Object $AdMembers $DbMembers.userName -ErrorAction SilentlyContinue
+
+writeHtmlHeader  $fileName
+writeTitle       $fileName "User(s) Added"
+
+if ($diffUsers) {
+    #Find out if users have been added to AD group
+    $diffUsers | % {
+        if ($_.SideIndicator -eq "<=") {
+            $newUsers   += $_.inputObject
+            writeDbInfo    $_.inputObject $today
+            writeTableData $filename $_.inputObject
+        }
+    }
+}
+
+writeTitle $fileName "User(s) Removed (manually)"
+
+if ($diffUsers) {
+    #Find out if users have been removed from AD group
+    $diffUsers | % {
+        if ($_.SideIndicator -eq "=>") {
+            $removedUsers += $_.inputObject
+            deleteDbInfo     $_.inputObject
+            writeTableData   $filename $_.inputObject
+        }
+    }
+
+} else {
+    #Database is empty (initial populate) *or* no changes
+    if (-not $DbMembers) {
+        $AdMembers | % {
+            writeTableData $filename $_
+            writeDbInfo    $_ $today
+        }
+    }
+}
+
+writeTitle $fileName "User(s) Expired (removed automatically)"
+
+#Find out if there are expired users
+$DbMembers | % {
+    if (($_.dateAdded - $deadline -le 0) -and ($exceptions -notcontains $_.username)) {
+        $expiredUsers     += $_.userName
+        deleteDbInfo         $_.userName $today
+        writeTableData       $filename  $_.userName
+        #Comment out "-whatif" to actually perform operation
+        Remove-ADGroupMember $groupname $_.userName -Confirm:$false #-whatif
+    }
+}
+
+writeTitle $fileName "Exceptions"
+
+#Document who the exceptions are
+$exceptions | % {
+    writeTableData $filename  $_
+}
+
+writeTitle $fileName "Full Membership list"
+
+#Complete list of exisiting users
+$ADMembers | % {
+    writeTableData $filename  $_
+}
+
+writeHtmlFooter $fileName
+
+sendEmail Report@fu.com " Server-exch2010.fu.com $fileName 
