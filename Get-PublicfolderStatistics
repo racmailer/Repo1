@@ -1,0 +1,1 @@
+Get-PublicFolderStatistics -resultsize unlimited |  Export-csv C:\Temp\PublicfolderStatistics.csv
