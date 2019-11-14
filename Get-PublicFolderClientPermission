@@ -1,0 +1,1 @@
+Get-PublicFolder \ -Recurse | Get-PublicFolderClientPermission | Select-Object Identity,@{Expression={$_.User};Label="User";},@{Expression={$_.AccessRights};Label="AccessRights";} | Export-Csv C:\Scripts\PublicFolderClientPermission.csv
