@@ -1,0 +1,2 @@
+Get-PublicFolder \ -Recurse | Get-PublicFolderAdministrativePermission| Select-Object Identity,@{Expression={$_.User};Label="User";},@{Expression={$_.AccessRights};Label="AccessRights";},IsInherited,Deny | Export-Csv C:\Temp\PublicFolderAdministrativePermission.csv
+
