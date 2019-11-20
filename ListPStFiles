@@ -1,0 +1,7 @@
+# List all PST files attached to Outlook 
+# using Powershell 
+#  
+# Run local on the workstation 
+ 
+$outlook = New-Object -comObject Outlook.Application 
+$outlook.Session.Stores | where { ($_.FilePath -like '*.PST') } | format-table DisplayName, FilePath -autosize 
