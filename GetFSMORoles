@@ -1,0 +1,23 @@
+#========================================================================
+# Script will find FSMO roles on the Domain Run as administrator
+#========================================================================
+Clear-host
+#Import AD Module if not Found
+if (-not (Get-Module ActiveDirectory)){            
+  Import-Module ActiveDirectory            
+}            
+#Discover Forest and Domain FSMO Roles
+Write-host "................................................"
+Write-Host `tDiscovering Domain and Forest Name Space`n -Fore Yellow;start-Sleep -Seconds 2 
+$Domain = Get-ADDomain | select -ExpandProperty Name   
+$Forest = Get-ADForest | select -ExpandProperty Name
+Write-Host `tFound $Forest Forest.`n -Fore Yellow;start-Sleep -Seconds 2 
+Write-Host `tFound $Domain Domain.`n -Fore Yellow;start-Sleep -Seconds 2 
+Write-host "................................................"
+# Getting Forest Level FSMO Roles
+Write-Host `tGetting FOREST FSMO roles for $Forest Forest`n -Fore Cyan;start-Sleep -Seconds 1 
+Get-ADForest $Forest | Fl SchemaMaster,DomainNamingMaster
+# Getting Domain Level FSMO Roles
+Write-Host `tGetting DOMAIN FSMO roles for $Domain Domain`n -Fore Cyan;start-Sleep -Seconds 1 
+Get-ADDomain $Domain | fl PDCEmulator,RIDMaster,InfrastructureMaster
+Write-host "................................................"
