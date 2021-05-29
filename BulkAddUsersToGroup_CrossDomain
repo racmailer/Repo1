@@ -1,0 +1,7 @@
+# Import-Module ActiveDirectory
+  $adGroup = "MondayDotCom_All_Members"
+Import-Csv -Path “C:\Temp\MondayMemberUsers.csv” | ForEach-Object {
+ $samAccountName = Get-ADUser  $_.’samAccountName’ -Server $_.'Domain'
+ Add-ADGroupMember $adGroup $samAccountName;
+ Write-Host "- "$samAccountName" added to "$adGroup
+}
