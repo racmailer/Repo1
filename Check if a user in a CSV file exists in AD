@@ -1,0 +1,15 @@
+$Result=@() 
+Import-Csv 'C:\Users.csv' | ForEach-Object {
+$user = $_."UserPrincipalName"
+$userobj = $(try {Get-ADUser $user} catch {$Null})
+If ($userobj -ne $Null) {
+$UserExists = $true
+} else {
+$UserExists = $false
+}
+$Result += New-Object PSObject -property @{ 
+UserPrincipalName = $user
+UserExists = $UserExists }
+}
+$Result | Select UserPrincipalName,UserExists
+$Result | Export-CSV "C:\ADAccountStatusReport.csv" -NoTypeInformation -Encoding UTF8
