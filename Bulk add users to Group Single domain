@@ -1,0 +1,8 @@
+################################################################################################
+# Bulk User add to group in singe domain environment.
+# -Members $_.’User-Name’  equals to the Column description where the users are listed in the CSV
+# Run on DC or member server with Activedirectory module installed
+################################################################################################
+#Import-Module ActiveDirectory 
+$GroupName = "TolunaUserGroup"
+Import-Csv -Path “C:\Temp\Users-To-Add.csv” | ForEach-Object {Add-ADGroupMember -Identity “$TolunaUserGroup” -Members $_.’User-Name’}
