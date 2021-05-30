@@ -1,0 +1,6 @@
+$computer = "hp-pc";
+$domainUser = "DomainName/Morgan";
+$group = "Administrators";
+$groupObj =[ADSI]"WinNT://$computer/$group,group" 
+$userObj = [ADSI]"WinNT://$domainUser,user"
+$groupObj.Add($userObj.Path)
