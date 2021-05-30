@@ -1,3 +1,7 @@
+##################################################################
+# Users will be addedd to the defined group works with Chid Domains
+# Import the Activedirectory module if needed or run it on a DC with PS5
+###################################################################
 # Import-Module ActiveDirectory
   $adGroup = "MondayDotCom_All_Members"
 Import-Csv -Path “C:\Temp\MondayMemberUsers.csv” | ForEach-Object {
