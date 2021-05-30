@@ -1,0 +1,16 @@
+$Groups = Get-ADGroup -Filter "*"
+$Groups | ForEach-Object {
+$group = $_.Name
+$members = ''
+Get-ADGroupMember $group | ForEach-Object {
+        If($members) {
+              $members=$members + ";" + $_.Name
+           } Else {
+              $members=$_.Name
+           }
+  }
+New-Object -TypeName PSObject -Property @{
+      GroupName = $group
+      Members = $members
+     }
+} | Export-CSV "C:\AD-Group-Members.csv" -NoTypeInformation -Encoding UTF8
