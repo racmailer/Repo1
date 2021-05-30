@@ -1,0 +1,12 @@
+Import-Module ActiveDirectory
+
+function Get-ADNestedGroupMembers {
+  [cmdletbinding()]
+  param ( [String] $Group )            
+  Import-Module ActiveDirectory
+  $Members = Get-ADGroupMember -Identity $Group -Recursive
+  $members
+}
+
+Get-ADNestedGroupMembers "Domain Admins" | Select Name,DistinguishedName |
+Export-CSV "C:\ADNestedGroupMembers.csv" -NoTypeInformation -Encoding UTF8
