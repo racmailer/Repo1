@@ -4,5 +4,5 @@
 # Run on DC or member server with Activedirectory module installed
 ################################################################################################
 #Import-Module ActiveDirectory 
-$GroupName = "TolunaUserGroup"
-Import-Csv -Path “C:\Temp\Users-To-Add.csv” | ForEach-Object {Add-ADGroupMember -Identity “$TolunaUserGroup” -Members $_.’User-Name’ -DisablePermissiveModify -ErrorAction Stop -Verbose}
+$GroupName = "DomainUserGroup"
+Import-Csv -Path “C:\Temp\Users-To-Add.csv” | ForEach-Object {Add-ADGroupMember -Identity “$DomainUserGroup” -Members $_.’User-Name’ -DisablePermissiveModify -ErrorAction Stop -Verbose}
