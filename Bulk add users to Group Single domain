@@ -5,4 +5,4 @@
 ################################################################################################
 #Import-Module ActiveDirectory 
 $GroupName = "TolunaUserGroup"
-Import-Csv -Path “C:\Temp\Users-To-Add.csv” | ForEach-Object {Add-ADGroupMember -Identity “$TolunaUserGroup” -Members $_.’User-Name’}
+Import-Csv -Path “C:\Temp\Users-To-Add.csv” | ForEach-Object {Add-ADGroupMember -Identity “$TolunaUserGroup” -Members $_.’User-Name’ -DisablePermissiveModify -ErrorAction Stop -Verbose}
