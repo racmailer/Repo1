@@ -6,9 +6,8 @@
 
 $Computer1 = PC1
 ping  $Computer1
-Test-Connection -computername $Computer1 -quiet
-Test-Connection -computername $Computer1 -CommonTCPPort SMB
-Test-Connection -computername $Computer1 -CommonTCPPort HTTP -Informationlevel Detailed
+Test-NetConnection -computername $Computer1 -CommonTCPPort SMB
+Test-NetConnection -computername $Computer1 -CommonTCPPort HTTP -Informationlevel Detailed
 Test-Connection -computername $Computer1 -Port 3268 # Global cataloge LDAP TCP
 Test-Connection -computername $Computer1 -Port 3269 # Global cataloge LDAP over SSLTCP
 Test-Connection -computername $Computer1 -Port 636  # LDAP over SSL TCP
