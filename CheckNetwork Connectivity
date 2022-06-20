@@ -18,7 +18,7 @@ Test-NetConnection -computername $Computer1 -Port 138  # NetBios datagram servic
 Test-NetConnection-computername $Computer1 -Port 139  # Netbios Sessions service TCP
 Test-NetConnection -computername $Computer1 -Port 445  # SMB over IP (Microsoft-DS) TCP, UDP
 Test-NetConnection -computername $Computer1 -Port 21   # FTP
-Test-NetConnectionTest-NetConnection -computername $Computer1 -Port 22   # SSH
+Test-NetConnection -computername $Computer1 -Port 22   # SSH
 Test-NetConnection -computername $Computer1 -Port 53   # DNS TCP, UDP
 Test-NetConnection -computername $Computer1 -Port 57   # dhcpServer
 Test-NetConnection -computername $Computer1 -Port 58   # dhcpClient
