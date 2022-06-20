@@ -8,21 +8,21 @@ $Computer1 = PC1
 ping  $Computer1
 Test-NetConnection -computername $Computer1 -CommonTCPPort SMB
 Test-NetConnection -computername $Computer1 -CommonTCPPort HTTP -Informationlevel Detailed
-Test-Connection -computername $Computer1 -Port 3268 # Global cataloge LDAP TCP
-Test-Connection -computername $Computer1 -Port 3269 # Global cataloge LDAP over SSLTCP
-Test-Connection -computername $Computer1 -Port 636  # LDAP over SSL TCP
-Test-Connection -computername $Computer1 -Port 389  # LDAP TCP, UDP
-Test-Connection -computername $Computer1 -Port 135  # RPC endpoint mapper TCP, UDP
-Test-Connection -computername $Computer1 -Port 137  # Netbios Name Service TCP, UDP
-Test-Connection -computername $Computer1 -Port 138  # NetBios datagram service UDP
-Test-Connection -computername $Computer1 -Port 139  # Netbios Sessions service TCP
-Test-Connection -computername $Computer1 -Port 445  # SMB over IP (Microsoft-DS) TCP, UDP
-Test-Connection -computername $Computer1 -Port 21   # FTP
-Test-Connection -computername $Computer1 -Port 22   # SSH
-Test-Connection -computername $Computer1 -Port 53   # DNS TCP, UDP
-Test-Connection -computername $Computer1 -Port 57   # dhcpServer
-Test-Connection -computername $Computer1 -Port 58   # dhcpClient
-Test-Connection -computername $Computer1 -Port 88   # kerberose135
+Test-NetConnection -computername $Computer1 -Port 3268 # Global cataloge LDAP TCP
+Test-NetConnection -computername $Computer1 -Port 3269 # Global cataloge LDAP over SSLTCP
+Test-NetConnection -computername $Computer1 -Port 636  # LDAP over SSL TCP
+Test-NetConnection-computername $Computer1 -Port 389  # LDAP TCP, UDP
+Test-NetConnection -computername $Computer1 -Port 135  # RPC endpoint mapper TCP, UDP
+Test-NetConnection -computername $Computer1 -Port 137  # Netbios Name Service TCP, UDP
+Test-NetConnection -computername $Computer1 -Port 138  # NetBios datagram service UDP
+Test-NetConnection-computername $Computer1 -Port 139  # Netbios Sessions service TCP
+Test-NetConnection -computername $Computer1 -Port 445  # SMB over IP (Microsoft-DS) TCP, UDP
+Test-NetConnection -computername $Computer1 -Port 21   # FTP
+Test-NetConnectionTest-NetConnection -computername $Computer1 -Port 22   # SSH
+Test-NetConnection -computername $Computer1 -Port 53   # DNS TCP, UDP
+Test-NetConnection -computername $Computer1 -Port 57   # dhcpServer
+Test-NetConnection -computername $Computer1 -Port 58   # dhcpClient
+Test-NetConnection -computername $Computer1 -Port 88   # kerberose135
 
 
 
