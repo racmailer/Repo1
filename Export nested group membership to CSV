@@ -1,3 +1,4 @@
+## Export nested groupmembers to CSV file 
 Import-Module ActiveDirectory
 
 function Get-ADNestedGroupMembers {
@@ -10,3 +11,4 @@ function Get-ADNestedGroupMembers {
 
 Get-ADNestedGroupMembers "Domain Admins" | Select Name,DistinguishedName |
 Export-CSV "C:\ADNestedGroupMembers.csv" -NoTypeInformation -Encoding UTF8
+Exit
