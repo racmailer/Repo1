@@ -1,7 +1,7 @@
-## This Windows Powershell script adds the users specified in the Users column into the groups specified in the Groups column in the CSV.
+## This Windows Powershell script adds users specified in the Users column into the groups specified in the Groups column in the CSV.
 
 BEGIN{
-    #Checks if the user is in the administrator group. Warns and stops if the user is not.
+    #Checks if the user is in the administrator group. Warn and stops if the user is not.
     If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
         [Security.Principal.WindowsBuiltInRole] "Administrator"))
     {
