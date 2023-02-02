@@ -1,0 +1,1 @@
+get-childitem -directory | select-object fullname | export-csv  UserDirectories.csv -NoTypeInformation
